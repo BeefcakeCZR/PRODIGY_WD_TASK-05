@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <input type="text" id="locationInput" placeholder="Enter location">
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weatherInfo"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+.container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#weatherInfo {
+    margin-top: 20px;
+}
+function getWeather() {
+    const locationInput = document.getElementById('locationInput').value;
+    const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+    let apiUrl;
+
+    // Check if user entered a location or left it blank to use current location
+    if (locationInput.trim() === '') {
+        apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+    } else {
+        apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${locationInput}&appid=${apiKey}`;
+    }
+
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayWeather(data);
+        })
+        .catch(error => {
+            console.error('There was a problem fetching the weather data:', error);
+        });
+}
+
+function displayWeather(data) {
+    const weatherInfo = document.getElementById('weatherInfo');
+    weatherInfo.innerHTML = `
+        <h2>${data.name}, ${data.sys.country}</h2>
+        <p>Weather: ${data.weather[0].main}</p>
+        <p>Description: ${data.weather[0].description}</p>
+        <p>Temperature: ${Math.round(data.main.temp - 273.15)}°C</p>
+        <p>Humidity: ${data.main.humidity}%</p>
+        <p>Wind Speed: ${data.wind.speed} m/s</p>
+    `;
+}
